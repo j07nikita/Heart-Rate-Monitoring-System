@@ -1,16 +1,9 @@
-clear all; clc; close all;
+function [] = main(trainDir, testDir, outDir)
+cd testDir;
+files = dir(fullfile(testDir, '*.mat'));
 
-addpath(genpath('Data'));
-% Test Dataset IDs
-ID = [ "DATA_01_TYPE01", "DATA_02_TYPE02", "DATA_03_TYPE02", "DATA_04_TYPE02", ...
-       "DATA_05_TYPE02", "DATA_06_TYPE02", "DATA_07_TYPE02", "DATA_08_TYPE02",...
-       "DATA_09_TYPE02", "DATA_10_TYPE02", "DATA_11_TYPE02", "DATA_12_TYPE02"]; 
-
-for itr = 1:1
-	ppg_data = '.mat';
-	ground_data = '_BPMtrace.mat';
-    load(strcat(ID(itr + 1), ppg_data));
-    load(strcat(ID(itr + 1), ground_data));
+for itr = 1:length(files)
+    load(files(itr).name);
     sig = sig(2:end,:);
     % disp('HEYyasdsa'); 
     sampling_rate = 125;							% 125 Hz
@@ -33,6 +26,8 @@ for itr = 1:1
         window_segment = round((i-1)*jump+1 : last_value);
     	peaks_all(i) = piece_filtering(sig(:,window_segment), sampling_rate, peaks_all);
     end
+    pred = peaks_all(1:125);
+    save(strcat(outDir, 'output_team_18_', files(fileindex).name), 'pred')
     % peaks = []
 %     for i = 1 : window_number
 % % 	    Find peaks and BPM without SPT
@@ -43,4 +38,5 @@ for itr = 1:1
 %     		peaks(i) = 0.9*peaks(i) + 0.05*peaks(i-2) + 0.05*peaks(i-1);
 % 	   	end
 %     end
-end    
+end  
+end
